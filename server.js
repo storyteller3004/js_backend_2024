@@ -7,40 +7,41 @@ const port = 8000;
 app.use(express.json());
 app.use(express.static('public'));
 
-async function getDbCollection(dbAddress, dbName, dbCollectionName){
+async function getDbCollection(dbAddress, dbfood, dbCollectionfood){
 	const client = new MongoClient(dbAddress);
 	await client.connect();
-	const db = client.db(dbName);
-	return db.collection(dbCollectionName);
+	const db = client.db(dbfood);
+	return db.collection(dbCollectionfood);
 }
 
-app.get('/tasks', async function(req, res){
-	const collection = await getDbCollection('mongodb://127.0.0.1', 'todapp', 'tasks');
+app.get('/books', async function(req, res){
+	const collection = await getDbCollection('mongodb://127.0.0.1', 'mylibraryapp', 'books');
 	const data = await collection.find({}).toArray();
 	res.send(data);
 });
 
-app.get('/tasks/:id', async function(req, res){
-	const collection = await getDbCollection('mongodb://127.0.0.1', 'todapp', 'tasks');
+app.get('/books/:id', async function(req, res){
+	const collection = await getDbCollection('mongodb://127.0.0.1', 'mylibraryapp', 'books');
 	const data = await collection.findOne({_id: new ObjectId(req.params.id)});
 	res.send(data);
 });
 
-app.post('/tasks', async function(req, res){
-	const task = {...req.body, done:false};
-	const collection = await getDbCollection('mongodb://127.0.0.1', 'todapp', 'tasks');
-	await collection.insertOne(task);
-	res.send(task);
+app.post('/books', async function(req, res){
+	const meal = {...req.body, done:false};
+	const collection = await getDbCollection('mongodb://127.0.0.1', 'mylibraryapp', 'books');
+	await collection.insertOne(meal);
+	res.send(meal);
 });
 
-app.patch('/tasks/:id', async function(req, res){
-	const collection = await getDbCollection('mongodb://127.0.0.1', 'todapp', 'tasks');
+app.patch('/books/:id', async function(req, res){
+	const collection = await getDbCollection('mongodb://127.0.0.1', 'mylibraryapp', 'books');
 	const data = await collection.updateOne({_id: new ObjectId(req.params.id)}, {'$set': req.body});
 	res.send(data);
 });
  
-app.delete('/tasks/:id', async function(req, res){
-	const collection = await getDbCollection('mongodb://127.0.0.1', 'todapp', 'tasks');
+app.delete('/books/:id', async function(req, res){
+	console.log(req.params.id);
+	const collection = await getDbCollection('mongodb://127.0.0.1', 'mylibraryapp', 'books');
 	await collection.deleteOne({_id: new ObjectId(req.params.id)});
 	res.send({});
 });
